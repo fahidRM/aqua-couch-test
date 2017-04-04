@@ -9,8 +9,8 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-    const Session = require('../models/CouchSession');
-        //server.plugins['hapi-mongo-models'].Session;
+    const Session =// require('../models/CouchSession');
+    server.plugins['hapi-mongo-models'].Session;
 
 
     server.route({

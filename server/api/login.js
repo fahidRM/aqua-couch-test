@@ -12,8 +12,8 @@ const internals = {};
 internals.applyRoutes = function (server, next) {
 
     const AuthAttempt = require('../models/CouchAuthAttempt'); //server.plugins['hapi-mongo-models'].AuthAttempt;
-    const Session = require('../models/CouchSession');
-    //server.plugins['hapi-mongo-models'].Session;
+    const Session =// require('../models/CouchSession');
+    server.plugins['hapi-mongo-models'].Session;
     const User = server.plugins['hapi-mongo-models'].User;
 
 
