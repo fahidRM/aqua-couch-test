@@ -1,12 +1,15 @@
+/**
+ * Created by fahid on 4/4/17.
+ */
 'use strict';
 const AdminGroup = ('./CouchAdminGroup');
-   // require('./admin-group');
+// require('./admin-group');
 const Async = require('async');
-const Joi = require('joi');
-const MongoModels = require('mongo-models');
+const helper = require('./CouchHelper');
+
+class CouchAdmin {
 
 
-class Admin extends MongoModels {
     static create(name, callback) {
 
         const nameParts = name.trim().split(/\s/);
@@ -17,37 +20,58 @@ class Admin extends MongoModels {
                 middle: nameParts.length > 1 ? nameParts.shift() : undefined,
                 last: nameParts.join(' ')
             },
-            timeCreated: new Date()
+            timeCreated: new Date(),
+            type: "admin"
         };
 
-        this.insertOne(document, (err, docs) => {
-
-            if (err) {
-                return callback(err);
+        function preCallback(err, docs){
+            if(err){ callback(err); }
+            else{
+                let entryId =  docs.id;
+                helper.findById('admin', entryId, callback);
             }
+        }
 
-            callback(null, docs[0]);
-        });
-    }
+        helper.create(document, preCallback);
 
-    static findByUsername(username, callback) {
 
-        const query = { 'user.name': username.toLowerCase() };
-
-        this.findOne(query, callback);
     }
 
 
+    static pagedFind(query, field, sort, limit, page, callback){
+        helper.pagedFind('admin', query, field, sort, limit, page, callback);
+    }
 
+    static findById(id, callback){
+        helper.findById('admin', id, callback);
+    }
 
+    static findByIdAndDelete(id, callback){
+        helper.findByIdAndDelete('admin', id, callback);
+    }
 
+    static findByIdAndUpdate(id, update, callback){
 
+        helper.findByIdAndUpdate('admin', id, update.$set, callback);
 
+    }
+
+    static findByUsername(username, callback){
+
+        function preCallback(err, res){
+            if (err){ callback(err); }
+            else{
+                if (res && res.length > 0){ callback(null, res[0]); }
+                else {
+                    callback(null, res);
+                }
+            }
+        }
+
+        helper.findByChild('admin', ['user', 'name'], username.toLowerCase(), preCallback);
+    }
 
     constructor(attrs) {
-
-        super(attrs);
-
         Object.defineProperty(this, '_groups', {
             writable: true,
             enumerable: false
@@ -120,33 +144,8 @@ class Admin extends MongoModels {
             callback(null, groupHasPermission);
         });
     }
+
 }
 
 
-Admin.collection = 'admins';
-
-
-Admin.schema = Joi.object().keys({
-    _id: Joi.object(),
-    user: Joi.object().keys({
-        id: Joi.string().required(),
-        name: Joi.string().lowercase().required()
-    }),
-    groups: Joi.object().description('{ groupId: name, ... }'),
-    permissions: Joi.object().description('{ permission: boolean, ... }'),
-    name: Joi.object().keys({
-        first: Joi.string().required(),
-        middle: Joi.string().allow(''),
-        last: Joi.string().required()
-    }),
-    timeCreated: Joi.date()
-});
-
-
-Admin.indexes = [
-    { key: { 'user.id': 1 } },
-    { key: { 'user.name': 1 } }
-];
-
-
-module.exports = Admin;
+module.exports = CouchAdmin;

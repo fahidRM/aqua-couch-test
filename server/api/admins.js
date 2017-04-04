@@ -11,7 +11,9 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-    const Admin = server.plugins['hapi-mongo-models'].Admin;
+    const Admin = require('../models/CouchAdmin');
+
+        //server.plugins['hapi-mongo-models'].Admin;
     const User = server.plugins['hapi-mongo-models'].User;
 
 
