@@ -63,7 +63,7 @@ class Session extends MongoModels {
             if (err) {
                 return callback(err);
             }
-
+            console.log("MONGO SESSION FINAL RESULT:::::     ", results);
             results.newSession[0].key = results.keyHash.key;
 
             callback(null, results.newSession[0]);

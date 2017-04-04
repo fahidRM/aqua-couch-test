@@ -263,8 +263,8 @@ class CouchHelper{
                             else{
                                 count ++;
                                 if (iter === responses.length){
-                                    console.log("\n\nResp:::\n\n", success);
-                                    callback(null, success);
+                                    //console.log("\n\nResp:::\n\n", success);
+                                    callback(null, count);
                                 }
                             }
                         });

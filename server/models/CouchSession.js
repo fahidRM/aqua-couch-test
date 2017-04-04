@@ -63,42 +63,35 @@ class CouchSession{
                     type: "session"
                 };
 
-               /* function tx(err, rslt){
-                    console.log("*******************tx*****************88");
-                    console.log(err);
-                    console.log(rslt);
-                    console.log(rslt.id);
-                }*/
-                //self.insertOne(document, done);
-                helper.create( document, done);
-
-            }],
-            clean: ['newSession', function (results, done) {
-
-                console.log("Clean Up results" , results);
-                console.log(results)
-                function xp(err, docs){
-
-                    console.log("*****************xp****************");
-                    console.log(err);
-                    console.log(docs);
-                }
                 function preCallback(err, docs){
                     if(err){ done(err); }
                     else{
                         let entryId =  docs.id;
-                        console.log(docs);
-                        console.log(done);
-                        helper.findById('session', entryId, xp);
+                        helper.findById('session', entryId, secondPreCallback);
                     }
                 }
 
-                helper.deleteOne('session', [{ prop : 'userId', polarity : 1, value :  userId}, { prop: 'key', polarity : -1, value : results.keyHash.hash }], preCallback);
+                function secondPreCallback(err, docs){
+                    if(err){ done(err); }
+                    else{
+                        done(null, [docs]);
+                    }
+                }
 
-                //delete one:  query then delete
-                //self.deleteOne(query, done);
+                helper.create( document, preCallback);
+
+            }],
+            clean: ['newSession', function (results, done) {
+
+
+
+                helper.deleteOne('session', [{ prop : 'userId', polarity : 1, value :  userId}, { prop: 'key', polarity : -1, value : results.keyHash.hash }], done);
+
             }]
         }, (err, results) => {
+
+
+            console.log("MOD FINAL::: ", results);
 
             if (err) {
                 return callback(err);
@@ -106,7 +99,7 @@ class CouchSession{
 
             results.newSession[0].key = results.keyHash.key;
 
-            callback(null, results.newSession[0]);
+            callback(null, results.newSession[0]  );
         });
 
     }
@@ -155,5 +148,10 @@ class CouchSession{
     }
 
 }
+
+CouchSession.collection =  'sessions';
+CouchSession.indexes = [
+    { key: { userId: 1 } }
+];
 
 module.exports =  CouchSession;

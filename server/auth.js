@@ -9,7 +9,8 @@ const internals = {};
 
 internals.applyStrategy = function (server, next) {
 
-    const Session = server.plugins['hapi-mongo-models'].Session;
+    const Session = require('./models/CouchSession');
+        //server.plugins['hapi-mongo-models'].Session;
     const User = server.plugins['hapi-mongo-models'].User;
 
     server.auth.strategy('session', 'cookie', {

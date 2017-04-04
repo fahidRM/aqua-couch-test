@@ -12,8 +12,8 @@ const internals = {};
 internals.applyRoutes = function (server, next) {
 
     const AuthAttempt = require('../models/CouchAuthAttempt'); //server.plugins['hapi-mongo-models'].AuthAttempt;
-    const Session =// require('../models/CouchSession');
-    server.plugins['hapi-mongo-models'].Session;
+    const Session = require('../models/CouchSession');
+   // server.plugins['hapi-mongo-models'].Session;
     const User = server.plugins['hapi-mongo-models'].User;
 
 
@@ -89,6 +89,7 @@ internals.applyRoutes = function (server, next) {
 
                     Session.create(request.pre.user._id.toString(), (err, session) => {
 
+
                         if (err) {
                             return reply(err);
                         }
@@ -100,8 +101,12 @@ internals.applyRoutes = function (server, next) {
         },
         handler: function (request, reply) {
 
+
             const credentials = request.pre.session._id.toString() + ':' + request.pre.session.key;
             const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
+
+            console.log("handler credentials::: ", credentials);
+            console.log("handler auth Header::: ", authHeader);
 
             const result = {
                 user: {
@@ -113,6 +118,9 @@ internals.applyRoutes = function (server, next) {
                 session: request.pre.session,
                 authHeader
             };
+
+            console.log("handler result", result);
+
 
             request.cookieAuth.set(result);
             reply(result);

@@ -10,7 +10,7 @@ const internals = {};
 internals.applyRoutes = function (server, next) {
 
     const AuthAttempt = require('../models/CouchAuthAttempt');
-        //server.plugins['hapi-mongo-models'].AuthAttempt;
+        //server.pluginsins['hapi-mongo-models'].AuthAttempt;
 
 
     server.route({
